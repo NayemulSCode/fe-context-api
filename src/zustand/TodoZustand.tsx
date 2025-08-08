@@ -1,0 +1,41 @@
+import { create } from "zustand";
+
+type Todo = {
+  id: number;
+  text: string;
+  completed: boolean;
+};
+
+type TodoStore = {
+  todos: Todo[];
+  filter: "all" | "active" | "completed";
+  addTodo: (text: string) => void;
+  toggleTodo: (id: number) => void;
+  deleteTodo: (id: number) => void;
+  setFilter: (filter: "all" | "active" | "completed") => void;
+};
+
+// Remove any computed properties from the store
+export const useTodoStore = create<TodoStore>((set) => ({
+  todos: [],
+  filter: "all",
+
+  addTodo: (text) =>
+    set((state) => ({
+      todos: [...state.todos, { id: Date.now(), text, completed: false }],
+    })),
+
+  toggleTodo: (id) =>
+    set((state) => ({
+      todos: state.todos.map((todo) =>
+        todo.id === id ? { ...todo, completed: !todo.completed } : todo
+      ),
+    })),
+
+  deleteTodo: (id) =>
+    set((state) => ({
+      todos: state.todos.filter((todo) => todo.id !== id),
+    })),
+
+  setFilter: (filter) => set({ filter }),
+}));
